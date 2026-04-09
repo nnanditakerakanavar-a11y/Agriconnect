@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+
+.page-title{
+    text-align:center;
+    color:#2e7d32;
+    margin:20px 0;
+}
+
+/* Grid container */
+.orders-container{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
+    gap:20px;
+    max-width:1000px;
+    margin:30px auto;
+}
+
+/* Square card */
+.order-card{
+    background:white;
+    border-radius:15px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.1);
+    padding:20px;
+    text-align:center;
+    aspect-ratio:1/1;   /* makes square card */
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    transition:0.3s;
+    border-top:5px solid #2e7d32;
+}
+
+.order-card:hover{
+    transform:translateY(-5px);
+    box-shadow:0 15px 35px rgba(0,0,0,0.2);
+}
+
+/* product name */
+.product-name{
+    font-size:18px;
+    font-weight:bold;
+    color:#1b5e20;
+    margin-bottom:10px;
+}
+
+/* price */
+.price{
+    font-weight:bold;
+    font-size:16px;
+    margin:5px 0;
+}
+
+/* status badge */
+.status{
+    margin-top:8px;
+    padding:5px 12px;
+    border-radius:20px;
+    background:#e8f5e9;
+    color:#2e7d32;
+    font-size:13px;
+    display:inline-block;
+}
+
+.empty{
+    text-align:center;
+    color:gray;
+}
+
+</style>
+
+<h2 class="page-title">My Orders</h2>
+
+<div class="orders-container">
+
+{% for order in orders %}
+<div class="order-card">
+
+<div class="product-name">
+{{ order.product.name }}
+</div>
+
+<div>
+Qty: {{ order.quantity }} {{ order.unit }}
+</div>
+
+<div class="price">
+₹ {{ order.total_price }}
+</div>
+
+<div class="status">
+{{ order.status }}
+</div>
+
+</div>
+{% empty %}
+<p class="empty">No orders yet</p>
+{% endfor %}
+
+</div>
+
+{% endblock %}

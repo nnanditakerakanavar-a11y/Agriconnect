@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% load static %}
+
+<style>
+
+/* Title */
+h2{
+    text-align:center;
+    color:#2e7d32;
+    margin:20px 0;
+}
+
+/* Search box */
+.search-box{
+    text-align:center;
+    margin-bottom:30px;
+}
+
+.search-box input{
+    padding:8px;
+    width:220px;
+    border-radius:20px;
+    border:1px solid #ccc;
+}
+
+.search-box button{
+    padding:8px 15px;
+    border:none;
+    border-radius:20px;
+    background:yellow;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+/* Product grid */
+.product-container{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:15px; /* reduced gap */
+}
+
+/* Product card (SMALL SIZE) */
+.product-card{
+    width:200px;              /* reduced from 250px */
+    background:white;
+    border-radius:15px;
+    padding:10px;             /* reduced padding */
+    text-align:center;
+    box-shadow:0 10px 20px rgba(0,0,0,0.15);
+    transition:0.3s;
+    font-size:13px;           /* smaller text */
+}
+
+.product-card:hover{
+    transform:scale(1.03);
+}
+
+/* Image */
+.product-card img{
+    width:100%;
+    height:120px;             /* smaller image */
+    object-fit:cover;
+    border-radius:10px;
+}
+
+/* Buttons */
+.product-card a{
+    display:inline-block;
+    margin-top:6px;
+    padding:6px 10px;         /* smaller buttons */
+    font-size:12px;
+    background:yellow;
+    color:black;
+    text-decoration:none;
+    border-radius:15px;
+    font-weight:bold;
+}
+
+.out-stock{
+    color:red;
+    font-weight:bold;
+}
+
+</style>
+
+<h2>Available Products</h2>
+
+<!-- CATEGORY FILTER -->
+<div style="text-align:center; margin-bottom:20px;">
+
+<a href="{% url 'product_list' %}" 
+style="padding:6px 12px; background:#2e7d32; color:white; border-radius:20px; text-decoration:none;">
+All
+</a>
+
+{% for category in categories %}
+
+<a href="?category={{ category.id }}"
+style="padding:6px 12px; background:white; border-radius:20px; text-decoration:none; margin:5px; border:1px solid #ccc; font-size:13px;">
+{{ category.name }}
+</a>
+
+{% endfor %}
+
+</div>
+
+<!-- SEARCH BOX -->
+<div class="search-box">
+    <form method="GET">
+        <input 
+            type="text" 
+            name="q" 
+            placeholder="Search product..." 
+            value="{{ request.GET.q }}"
+        >
+        <button type="submit">Search</button>
+    </form>
+</div>
+
+<!-- PRODUCTS -->
+<div class="product-container">
+
+{% for product in products %}
+
+<div class="product-card">
+
+    {% if product.image %}
+        <img src="{{ product.image.url }}">
+    {% endif %}
+
+    <h4>{{ product.name }}</h4>
+
+    <p><b>Farmer:</b> {{ product.farmer.name }}</p>
+
+    <p><b>Location:</b> {{ product.farmer.location }}</p>
+
+    <p><b>₹ {{ product.price }} / {{ product.unit }}</b></p>
+
+    {% if product.quantity > 0 %}
+
+        <p>Available: {{ product.quantity }} {{ product.unit }}</p>
+
+        <div style="display:flex; justify-content:center; gap:5px; flex-wrap:wrap;">
+
+            <!-- Buy Now -->
+            <a href="{% url 'payment_method' product.id %}">Buy now</a>
+
+            <!-- Add to Cart -->
+            <a href="{% url 'add_to_cart' product.id %}" style="background:#ff9800;">Cart</a>
+
+        </div>
+
+    {% else %}
+
+        <p class="out-stock">Out of Stock</p>
+
+    {% endif %}
+
+</div>
+
+{% empty %}
+
+<p style="text-align:center;">No products found</p>
+
+{% endfor %}
+
+</div>
+
+{% endblock %}

@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-$x$h0h_xk2$a9jqu-i^_9iqxlmbxa*qbstl1px1yyybww4x%=+
 DEBUG = False
 
 ALLOWED_HOSTS = [
-    'f2c-1upe.onrender.com',
+    'farmpoject.onrender.com',
     '127.0.0.1',
     'localhost'
 ]

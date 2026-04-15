@@ -234,6 +234,23 @@ def add_to_cart(request, id):
 @login_required
 def place_order(request, id):
 
+    from django.core.mail import send_mail
+
+def place_order(request):
+    # your existing order logic here
+
+    customer_email = request.user.email  # or from form
+
+    send_mail(
+        'Order Confirmed',
+        'Your order has been placed successfully!',
+        'a83914001@smtp-brevo.com',
+        [customer_email],
+        fail_silently=False
+    )
+
+    return render(request, 'order_success.html')
+
     product = get_object_or_404(Product, id=id)
     customer = request.user.customer
     customer_email = customer.user.email

@@ -234,43 +234,22 @@ def add_to_cart(request, id):
 @login_required
 def place_order(request, id):
 
-    from django.core.mail import send_mail
-
-def place_order(request):
-    # your existing order logic here
-
-    customer_email = request.user.email  # or from form
-
-    send_mail(
-        'Order Confirmed',
-        'Your order has been placed successfully!',
-        'a83914001@smtp-brevo.com',
-        [customer_email],
-        fail_silently=False
-    )
-
-    return render(request, 'order_success.html')
-
     product = get_object_or_404(Product, id=id)
     customer = request.user.customer
-    customer_email = customer.user.email
 
     if request.method == "POST":
 
         quantity = int(request.POST.get("quantity"))
         unit = request.POST.get("unit")
 
-        # 🆕 New fields
         name = request.POST.get("name")
         phone = request.POST.get("phone")
         address = request.POST.get("address")
         city = request.POST.get("city")
         pincode = request.POST.get("pincode")
 
-        product_quantity = product.quantity
-
-        # ❌ Quantity check
-        if quantity > product_quantity:
+        # check stock
+        if quantity > product.quantity:
             return render(request, "place_order.html", {
                 "product": product,
                 "error": "Not enough quantity available"
@@ -278,20 +257,14 @@ def place_order(request):
 
         total_price = quantity * product.price
 
-        # Farmer details
-        farmer_email = product.farmer.user.email
-        farmer_name = product.farmer.user.username
-
-        # ✅ Save Order (UPDATED)
-        Order.objects.create(
+        # save order
+        order = Order.objects.create(
             customer=customer,
             product=product,
             quantity=quantity,
             unit=unit,
             total_price=total_price,
             status='pending',
-
-            # 🆕 Save customer details
             name=name,
             phone=phone,
             address=address,
@@ -299,24 +272,28 @@ def place_order(request):
             pincode=pincode
         )
 
-        # 📧 Send email to farmer (UPDATED)
+        # send email to farmer
+        farmer_email = product.farmer.user.email
+        farmer_name = product.farmer.user.username
+
         send_mail(
             subject='New Order Received',
             message=(
                 f'Hi {farmer_name},\n\n'
                 f'You received a new order for {product.name}.\n\n'
-                f'👤 Customer: {name}\n'
-                f'📞 Phone: {phone}\n'
-                f'📍 Address: {address}, {city} - {pincode}\n\n'
-                f'📦 Quantity: {quantity} {unit}\n'
-                f'💰 Total Price: ₹{total_price}'
+                f'Customer: {name}\n'
+                f'Phone: {phone}\n'
+                f'Address: {address}, {city} - {pincode}\n\n'
+                f'Quantity: {quantity} {unit}\n'
+                f'Total Price: ₹{total_price}'
             ),
-            from_email='snehaangadi690@gmail.com',
+            from_email='a83914001@smtp-brevo.com',
             recipient_list=[farmer_email],
+            fail_silently=False
         )
 
-        # 🔻 Reduce product quantity
-        product.quantity = product_quantity - quantity
+        # reduce stock
+        product.quantity -= quantity
         product.save()
 
         return redirect("orders")

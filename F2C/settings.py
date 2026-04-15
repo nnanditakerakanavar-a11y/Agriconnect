@@ -23,13 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-$x$h0h_xk2$a9jqu-i^_9iqxlmbxa*qbstl1px1yyybww4x%=+'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = [
-    'farmpoject.onrender.com',
-    '127.0.0.1',
-    'localhost'
-]
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -162,3 +158,4 @@ MEDIA_ROOT = BASE_DIR / 'media'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 CSRF_TRUSTED_ORIGINS = ['https://farmpoject.onrender.com']
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
